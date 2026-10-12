@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://batnball-cricket.netlify.app/sitemap.xml
