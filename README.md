@@ -3,6 +3,7 @@
 **Free cricket manager game. Play it on your phone, in your browser.**
 
 ▶️ **Play now:** https://batnball-cricket.netlify.app
+
 💬 **Community:** https://t.me/+9wfWOfLEluNjMzk1
 
 Pick a team, build your squad and chase the title. Start in the CPL, win it to join the ICL franchise league with a live player auction, then lead your nation at the World Cup.
