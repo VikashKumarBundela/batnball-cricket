@@ -1164,9 +1164,9 @@ function renderPlay(){
   const ps=$('psub');
   if(busy){ps.hidden=true;return}
   ps.hidden=false;const live=!!(G&&G.ct&&!G.ct.done),liveI=!!(G&&natUnlocked()&&(natInvites().length||(natOpen()&&natPending()>0)));
-  ps.innerHTML=`<div class="row" style="margin-bottom:10px">${[['mt','Matches'],['ctt','Custom'+(live?' ●':'')],['int','International'+(FREE?' 🔒':liveI?' ●':'')],['fr','👥 Friends'+(FREE?' 🔒':mpIncoming().length||lvInvites().length?' ●':'')]].map(([k,l])=>`<button data-psub="${k}" class="${playSub==k?'':'g'}" style="flex:1 1 40%;padding:10px 2px;font-size:14px">${l}</button>`).join('')}</div>`;
+  ps.innerHTML=`<div class="row" style="margin-bottom:10px">${[['mt','Matches'],['ctt','Custom'+(live?' ●':'')],['int','International'+(FREE?' 🔒':liveI?' ●':'')],['fr','👥 Friends'+(WEB?' 🔒':mpIncoming().length||lvInvites().length?' ●':'')]].map(([k,l])=>`<button data-psub="${k}" class="${playSub==k?'':'g'}" style="flex:1 1 40%;padding:10px 2px;font-size:14px">${l}</button>`).join('')}</div>`;
   ps.querySelectorAll('[data-psub]').forEach(b=>b.onclick=()=>{playSub=b.dataset.psub;renderPlay()});
-  if(FREE&&(playSub=='int'||playSub=='fr')){flLockPlay();return}
+  if((FREE&&playSub=='int')||(WEB&&playSub=='fr')){flLockPlay();return}
   CTK=playSub=='int'?itCTK():'ct';
   renderPlayMain();renderCT();
   const mt=playSub=='mt';$('cm').hidden=!mt;$('mr').hidden=!mt;$('go').parentNode.hidden=!mt;$('ct').hidden=mt;
@@ -2099,8 +2099,8 @@ function renderProfile(){
   try{mpSyncLeg()}catch(e){}
   const lp=legacyParts(),lpMax=Math.max(1,...lp.map(x=>Math.abs(x[1]))),wcT=(G.titles||[]).filter(x=>x.lg=='World Cup').length;
   const tile=(v,l)=>`<div style="background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:10px 4px;text-align:center"><div style="font-size:22px;font-weight:800">${v}</div><div class="mu" style="font-size:12px">${l}</div></div>`;
-  const tabs=`<div style="display:flex;gap:0;margin:2px 0 12px;border:1px solid var(--ac);border-radius:12px;overflow:hidden">${[['lb',FREE?'🔒 Leaderboard':'🏅 Leaderboard'],['pf','👤 Profile']].map(([k,t])=>`<button data-lbt="${k}" class="${lbTab==k?'':'g'}" style="padding:13px 4px;font-size:16px;border-radius:0;border:0">${t}</button>`).join('')}</div>`;
-  c.innerHTML=tabs+(lbTab=='lb'?`<div style="font-size:30px;font-weight:800;line-height:1.1;margin:4px 2px 2px">🏅 LEADERBOARD</div><div class="mu" style="margin:0 2px 10px">How every manager ranks by legacy score.</div>`+(FREE?flLockH('Leaderboard','See how every manager ranks by legacy score. Arrives with Batnball Pro.'):legBoardH()):`<div style="margin:4px 0 12px;padding:16px 14px;border-radius:14px;background:var(--ac);color:#fff"><div style="font-size:30px;font-weight:800;line-height:1.1">👤 MY PROFILE</div><div style="opacity:.9;margin-top:4px;font-size:14px">Everything here is about you, ${G.manager}.</div></div>`+`<div class="card"><div class="mu">Manager</div><h2 style="font-size:22px">${G.manager}</h2><div class="k"><span>${G.role=='icl'?'ICL franchise':'Team'}</span><span>${G.role=='icl'?myICL().name:T.name}</span></div>${G.role=='icl'?'<div class="k"><span>Former CPL team</span><span>'+T.name+'</span></div>':''}${G.natId?'<div class="k"><span>National team</span><span>'+natName(G.natId)+'</span></div>':''}
+  const tabs=`<div style="display:flex;gap:0;margin:2px 0 12px;border:1px solid var(--ac);border-radius:12px;overflow:hidden">${[['lb',WEB?'🔒 Leaderboard':'🏅 Leaderboard'],['pf','👤 Profile']].map(([k,t])=>`<button data-lbt="${k}" class="${lbTab==k?'':'g'}" style="padding:13px 4px;font-size:16px;border-radius:0;border:0">${t}</button>`).join('')}</div>`;
+  c.innerHTML=tabs+(lbTab=='lb'?`<div style="font-size:30px;font-weight:800;line-height:1.1;margin:4px 2px 2px">🏅 LEADERBOARD</div><div class="mu" style="margin:0 2px 10px">How every manager ranks by legacy score.</div>`+(WEB?flLockH('Leaderboard','See how every manager ranks by legacy score. Arrives with Batnball Pro.'):legBoardH()):`<div style="margin:4px 0 12px;padding:16px 14px;border-radius:14px;background:var(--ac);color:#fff"><div style="font-size:30px;font-weight:800;line-height:1.1">👤 MY PROFILE</div><div style="opacity:.9;margin-top:4px;font-size:14px">Everything here is about you, ${G.manager}.</div></div>`+`<div class="card"><div class="mu">Manager</div><h2 style="font-size:22px">${G.manager}</h2><div class="k"><span>${G.role=='icl'?'ICL franchise':'Team'}</span><span>${G.role=='icl'?myICL().name:T.name}</span></div>${G.role=='icl'?'<div class="k"><span>Former CPL team</span><span>'+T.name+'</span></div>':''}${G.natId?'<div class="k"><span>National team</span><span>'+natName(G.natId)+'</span></div>':''}
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px">${tile(G.season,'Seasons')}${tile(mg.m,'Matches')}${tile(rate+'%','Win rate')}${tile(mg.t,'CPL titles')}${tile(mg.it||0,'ICL titles')}${tile(FREE?'🔒':wcT,'World Cups')}</div><div class="mu" style="margin-top:8px">${mg.w} wins from ${mg.m} matches managed.</div></div>
   <div class="card"><h2>Legacy score</h2><div class="big">${legacy().toLocaleString('en-US')}</div>${lp.map(([n,v])=>`<div style="padding:6px 0;border-bottom:1px solid var(--bd)"><div class="k" style="border:0;padding:0"><span>${n}</span><span><b>${v}</b></span></div><div style="height:5px;border-radius:4px;background:var(--bd);margin-top:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.max(v?3:0,Math.round(Math.abs(v)/lpMax*100))}%;background:var(--ac)"></i></div></div>`).join('')}</div>
   <div class="card"><h2>🏆 Trophy cabinet</h2>${(G.titles||[]).length?(G.titles).map(x=>`<div class="k"><span>${x.lg} champions<div class="mu">${x.team}</div></span><span>Season ${x.season}</span></div>`).join(''):'<div class="mu">No titles yet. Win the CPL to unlock the ICL.</div>'}</div>
@@ -2402,7 +2402,7 @@ function dcProfileH(){
   return `<div class="card"><h2>🎯 Daily challenge</h2><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">${t(dcStreak(),'Streak')}${t(D.best||0,'Best streak')}${t((D.won||0)+'/'+(D.played||0),'Won')}</div><div style="margin-top:10px">${dcDots()}</div></div>`;
 }
 
-const FREE=true;
+const WEB=true;const PRO_ON=(()=>{try{return localStorage.getItem('batnball:plan')=='pro'}catch(e){return false}})();const FREE=WEB&&!PRO_ON;
 // ---- Sound effects (v61): short synthesized sounds, no audio files. Mute button in the header.
 let sfxOn=true;try{sfxOn=localStorage.getItem('batnball:sfx')!=='0'}catch(e){}
 let sfxCtx=null;
@@ -2522,8 +2522,8 @@ const PRO_MAIL='realvikky77@gmail.com',COMMUNITY='https://t.me/+9wfWOfLEluNjMzk1
 const PRO_HREF='mailto:'+PRO_MAIL+'?subject='+encodeURIComponent('Notify me about Batnball Pro')+'&body='+encodeURIComponent('Hi, please tell me when Batnball Pro is ready.');
 function proAsked(){try{return localStorage.getItem('batnball:notify')=='1'}catch(e){return false}}
 const proHint=()=>proAsked()?'Thank you! Send the email so you are on the list.':'Tap Notify me, then press send in the email that opens.';
-function flLockH(t,x){return `<div class="card lockc"><div class="lk">🔒</div><h2>${t}</h2><div class="soon">Coming soon</div><div class="mu">${x||'This arrives with Batnball Pro.'}</div><a class="abtn g" data-notify href="${PRO_HREF}">🔔 Notify me</a><div class="mu pnm" style="margin-top:8px">${proHint()}</div></div>`}
-function proCardH(){return `<div class="card pro"><div style="font-weight:800;font-size:17px">⭐ Batnball Pro is coming</div><div class="mu" style="margin-top:2px">Pro will add International cricket, the Friends league, real-time matches, the Leaderboard and login so your career follows you to any phone. Today's version is free.</div><a class="abtn" data-notify href="${PRO_HREF}" style="margin-top:12px">🔔 Notify me</a><div class="mu pnm" style="margin-top:8px">${proHint()}</div></div>`}
+function flLockH(t,x){if(PRO_ON)return `<div class="card lockc"><div class="lk">⭐</div><h2>${t}</h2><div class="soon">Coming soon</div><div class="mu">Included in your Pro plan. We are finishing it now.</div></div>`;return `<div class="card lockc"><div class="lk">🔒</div><h2>${t}</h2><div class="soon">Coming soon</div><div class="mu">${x||'This arrives with Batnball Pro.'}</div><a class="abtn g" data-notify href="${PRO_HREF}">🔔 Notify me</a><div class="mu pnm" style="margin-top:8px">${proHint()}</div></div>`}
+function proCardH(){if(PRO_ON)return `<div class="card pro"><div style="font-weight:800;font-size:17px">⭐ You have Batnball Pro</div><div class="mu" style="margin-top:2px">International cricket is unlocked. The Friends league, real-time matches and the Leaderboard are included and arrive soon.</div></div>`;return `<div class="card pro"><div style="font-weight:800;font-size:17px">⭐ Batnball Pro is coming</div><div class="mu" style="margin-top:2px">Pro will add International cricket, the Friends league, real-time matches and the Leaderboard. Pro payments open soon. Today's version is free.</div><a class="abtn" data-notify href="${PRO_HREF}" style="margin-top:12px">🔔 Notify me</a><div class="mu pnm" style="margin-top:8px">${proHint()}</div></div>`}
 try{document.addEventListener('click',e=>{const a=e.target&&e.target.closest&&e.target.closest('[data-notify]');if(!a)return;try{localStorage.setItem('batnball:notify','1')}catch(x){}document.querySelectorAll('.pnm').forEach(n=>n.textContent='Thank you! Send the email so you are on the list.')})}catch(e){}
 function flLockPlay(){const k=playSub=='fr'?['Friends league','Play friends in real time. Arrives with Batnball Pro.']:['International cricket','Series, qualifiers and the World Cup arrive with Batnball Pro.'];$('cm').hidden=true;$('mr').hidden=true;$('go').parentNode.hidden=true;const c=$('ct');c.hidden=false;c.innerHTML=flLockH(k[0],k[1])}
 if(FREE){
@@ -2531,8 +2531,8 @@ if(FREE){
   natInvBanner=()=>'';natWindowCard=()=>'';natWcNoteCard=()=>'';natCanChange=()=>false;
   const flAuto=f=>function(){const id=G&&G.natId;if(G&&id)G.natId=null;try{return f.apply(this,arguments)}finally{if(G&&id)G.natId=id}};
   natOpenWindow=flAuto(natOpenWindow);natSeason=flAuto(natSeason);
-  const flRP=renderProfile;renderProfile=function(){flRP.apply(this,arguments);try{const c=$('pf');if(c&&lbTab=='pf'&&c.firstElementChild&&!c.querySelector('.pro')){c.firstElementChild.insertAdjacentHTML('afterend',proCardH())}}catch(e){}};
 }
+if(WEB){const flRP=renderProfile;renderProfile=function(){flRP.apply(this,arguments);try{const c=$('pf');if(c&&lbTab=='pf'&&c.firstElementChild&&!c.querySelector('.pro')){c.firstElementChild.insertAdjacentHTML('afterend',proCardH())}}catch(e){}}}
 try{if(typeof claude!=='undefined'){const j=document.getElementById('jc');if(j)j.hidden=true}}catch(e){}
 
 // ---- Support button (v66, v68): chip in with UPI. Edit the UPI ID or payment link here.
@@ -2565,6 +2565,181 @@ const supRH=renderHome;renderHome=function(){supRH.apply(this,arguments);try{con
   if(supOn()&&!h.querySelector('.supt')){h.insertAdjacentHTML('afterbegin',supHomeH());supWire(h)}
   const d=h.querySelector('#dcc');if(d&&h.querySelector('#dccp')&&d.parentNode===h&&h.lastElementChild!==d)h.appendChild(d)}catch(e){}};
 const supRP=renderProfile;renderProfile=function(){supRP.apply(this,arguments);try{supWire($('pf'))}catch(e){}};
+// ---- Accounts (v70): optional email login, cloud save and plan through Supabase's REST API (no library). Website only.
+const SB={url:'https://lmcncybbhjlmtkvnkhtq.supabase.co',key:'sb_publishable_9UeQ4JEEyQ1bPkV7PqQCDg_2j9RKuIQ',site:'https://batnball-cricket.netlify.app/'};
+const SBK='batnball:sb',SBTS='batnball:cts',SBPL='batnball:plan',SBPV='batnball:prevlocal';
+const acc={ses:null,mode:'in',open:false,busy:false,msg:'',err:false,sync:'',pend:null,dirty:false,tm:0,t0:0,rec:false,plan:''};
+const accOn=()=>WEB&&!!SB.url&&typeof claude==='undefined';
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){}};
+try{const s=JSON.parse(lsGet(SBK)||'null');if(s&&s.at&&s.rt&&s.uid)acc.ses=s}catch(e){}
+function accFriendly(m){
+  if(/invalid login/i.test(m))return 'Wrong email or password.';
+  if(/not confirmed/i.test(m))return 'Please confirm your email first. Check your inbox and spam folder.';
+  if(/already registered|already been registered/i.test(m))return 'This email already has an account. Tap Sign in.';
+  if(/at least \d+ char|weak password|password should/i.test(m))return 'Use a longer password (8 or more characters).';
+  if(/rate limit|too many/i.test(m))return 'Too many emails were sent. Please wait a few minutes and try again.';
+  if(/only request this after|security purposes/i.test(m))return 'Please wait a minute and try again.';
+  if(/valid email|invalid email|unable to validate email/i.test(m))return 'Please enter a valid email address.';
+  if(/same password|different from the old/i.test(m))return 'Choose a new password that is different from the old one.';
+  if(/expired|invalid.*(token|link)|otp/i.test(m))return 'This link has expired. Please request a new one.';
+  return m}
+async function sbReq(path,o){
+  o=o||{};const h={apikey:SB.key,'Content-Type':'application/json'};
+  if(o.auth){const t=await accToken();if(!t)throw new Error('Please sign in again.');h.Authorization='Bearer '+t}
+  if(o.prefer)h.Prefer=o.prefer;
+  const ac=typeof AbortController!='undefined'?new AbortController():null,to=ac&&setTimeout(()=>ac.abort(),25000);
+  let r;try{r=await fetch(SB.url+path,{method:o.method||'GET',headers:h,body:o.body==null?undefined:JSON.stringify(o.body),signal:ac?ac.signal:undefined})}
+  catch(e){throw Object.assign(new Error('No connection. Check your internet and try again.'),{net:true})}finally{if(to)clearTimeout(to)}
+  let j=null;const tx=await r.text();try{j=tx?JSON.parse(tx):null}catch(e){}
+  if(!r.ok){const m=(j&&(j.msg||j.error_description||j.message||j.error))||('Error '+r.status);throw Object.assign(new Error(accFriendly(String(m))),{status:r.status,raw:String(m)})}
+  return j}
+function accSet(j,uid,email){
+  const u=j.user||{};acc.ses={at:j.access_token,rt:j.refresh_token,exp:Date.now()+((j.expires_in||3600)*1000),uid:u.id||uid||(acc.ses&&acc.ses.uid)||'',email:u.email||email||(acc.ses&&acc.ses.email)||''};
+  lsSet(SBK,JSON.stringify(acc.ses))}
+function accClear(){acc.ses=null;acc.pend=null;acc.dirty=false;clearTimeout(acc.tm);lsSet(SBK,null);lsSet(SBTS,null)}
+function accToken(){
+  const s=acc.ses;if(!s)return Promise.resolve(null);if(s.exp-Date.now()>60000)return Promise.resolve(s.at);
+  if(!acc.rp)acc.rp=sbReq('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:s.rt}}).then(j=>{accSet(j);return acc.ses.at}).catch(e=>{if(e.net)return s.at;accClear();return null}).finally(()=>{acc.rp=null});
+  return acc.rp}
+// compression: gzip + base64 when the browser can, plain text otherwise
+const u8b64=u=>{let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
+const b64u8=b=>{const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+async function accGz(str){try{if(typeof CompressionStream!='undefined'){const buf=await new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();return 'g1:'+u8b64(new Uint8Array(buf))}}catch(e){}return 'p0:'+str}
+async function accUngz(s){
+  if(s.startsWith('p0:'))return s.slice(3);
+  if(s.startsWith('g1:')){const buf=await new Response(new Blob([b64u8(s.slice(3))]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();return new TextDecoder().decode(buf)}
+  throw new Error('This cloud save is in an unknown format.')}
+function accSum(g){try{const t=(g.league&&g.league.teams||[]).find(x=>x.id==g.teamId);return {m:g.manager||'Manager',t:(t&&t.name)||'',s:g.season||1,d:g.day||1}}catch(e){return {m:'Manager',t:'',s:1,d:1}}}
+const accSumH=(x,l)=>`<div class="mu" style="margin-top:4px"><b>${l}:</b> ${x.m}${x.t?' · '+x.t:''} · Season ${x.s}, day ${x.d}</div>`;
+// ---- sync
+async function accPlan(){
+  const s=acc.ses;if(!s)return;
+  try{const j=await sbReq('/rest/v1/profiles?select=plan&id=eq.'+encodeURIComponent(s.uid),{auth:1});
+    const p=j&&j[0]&&j[0].plan==='pro'?'pro':'free';acc.plan=p;lsSet(SBPL,p=='pro'?'pro':null);if((p=='pro')!==PRO_ON)acc.reload=true}catch(e){}}
+async function accApply(r){
+  const txt=await accUngz(r.data);JSON.parse(txt);
+  try{if(G)lsSet(SBPV,localStorage.getItem(KEY))}catch(e){}
+  lsSet(KEY,txt);lsSet(SBTS,r.updated_at);acc.dirty=false;G=null;location.reload()}
+async function accPull(manual){
+  const s=acc.ses;if(!s)return;acc.sync='Checking your cloud career…';accStat();
+  try{
+    const j=await sbReq('/rest/v1/saves?select=data,updated_at&user_id=eq.'+encodeURIComponent(s.uid),{auth:1}),r=j&&j[0];
+    if(!r){if(G)await accPush(false,true);else acc.sync='No cloud career yet. Start one and it saves here.'}
+    else if(!G){await accApply(r);return}
+    else if(lsGet(SBTS)===r.updated_at){if(acc.dirty||manual)await accPush();else{acc.sync='Saved to the cloud';accStat()}}
+    else{let rs;try{rs=accSum(JSON.parse(await accUngz(r.data)))}catch(e){rs={m:'Unknown',t:'',s:'?',d:'?'}}acc.pend={r,rs,ls:accSum(G)};acc.sync='Choose which career to keep.'}
+  }catch(e){acc.sync=e.net?'Offline. It will try again later.':e.message}
+  accRender()}
+async function accPush(force,first){
+  const s=acc.ses;if(!s||!G||acc.pend||acc.busy)return;
+  acc.busy=true;acc.dirty=false;clearTimeout(acc.tm);acc.t0=0;acc.sync='Saving to the cloud…';accStat();
+  let again=false;
+  try{
+    const data=await accGz(JSON.stringify(G)),cts=force||first?null:lsGet(SBTS),now=new Date().toISOString();let rows;
+    if(first){try{rows=await sbReq('/rest/v1/saves',{method:'POST',auth:1,prefer:'return=representation',body:{user_id:s.uid,data}})}catch(e){if(e.status==409){rows=null;again=true}else throw e}}
+    else if(force)rows=await sbReq('/rest/v1/saves?user_id=eq.'+encodeURIComponent(s.uid),{method:'PATCH',auth:1,prefer:'return=representation',body:{data,updated_at:now}});
+    else if(cts)rows=await sbReq('/rest/v1/saves?user_id=eq.'+encodeURIComponent(s.uid)+'&updated_at=eq.'+encodeURIComponent(cts),{method:'PATCH',auth:1,prefer:'return=representation',body:{data,updated_at:now}});
+    else{rows=await sbReq('/rest/v1/saves',{method:'POST',auth:1,prefer:'return=representation',body:{user_id:s.uid,data}})}
+    if(rows&&rows[0]){lsSet(SBTS,rows[0].updated_at);acc.sync='Saved to the cloud';acc.last=Date.now()}else again=true;
+  }catch(e){acc.dirty=true;acc.sync=e.net?'Offline. It will try again later.':'Cloud save failed: '+e.message;acc.tm=setTimeout(()=>accPush(),60000)}
+  acc.busy=false;
+  if(again){lsSet(SBTS,null);acc.dirty=false;await accPull();return}
+  accStat()}
+function accRlOk(){try{const t=+sessionStorage.getItem('bn:rl')||0;if(Date.now()-t<15000)return false;sessionStorage.setItem('bn:rl',String(Date.now()));return true}catch(e){return false}}
+async function accAfter(){
+  await accPlan();
+  if(acc.reload&&!acc.pend&&accRlOk()){acc.reload=false;G&&saveGame();acc.dirty=false;location.reload();return}
+  await accPull()}
+const accSG=saveGame;saveGame=function(){const r=accSG.apply(this,arguments);try{if(acc.ses&&G&&accOn()){acc.dirty=true;if(!acc.t0)acc.t0=Date.now();clearTimeout(acc.tm);acc.tm=setTimeout(()=>accPush(),Date.now()-acc.t0>90000?0:20000)}}catch(e){}return r};
+try{document.addEventListener('visibilitychange',()=>{if(document.hidden&&acc.ses&&acc.dirty&&G)accPush()});window.addEventListener('online',()=>{if(acc.ses&&acc.dirty&&G)accPush()})}catch(e){}
+// ---- screens
+function accToast(t){try{const d=document.createElement('div');d.textContent=t;d.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);max-width:88vw;background:#10173a;color:#fff;padding:12px 18px;border-radius:14px;font:600 15px/1.35 var(--fb,sans-serif);z-index:9990;box-shadow:0 8px 24px rgba(0,0,0,.3);text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),4200)}catch(e){}}
+function accModal(inner){try{const o=document.getElementById('acm');if(o)o.remove();const d=document.createElement('div');d.id='acm';d.style.cssText='position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px';d.innerHTML='<div class="card acct" style="width:100%;max-width:420px;margin:0">'+inner+'</div>';document.body.appendChild(d)}catch(e){}}
+const accMsgH=()=>`<div class="mu acmsg" style="margin-top:8px;${acc.err?'color:#c0392b;font-weight:600':''}">${acc.msg||''}</div>`;
+function accFormH(){
+  const up=acc.mode=='up';
+  return `<div class="row" style="margin-top:10px"><button class="${up?'g':''}" data-ac="mode-in">Sign in</button><button class="${up?'':'g'}" data-ac="mode-up">Create account</button></div>
+  <div class="row" style="margin-top:8px"><input class="acE" type="email" inputmode="email" autocomplete="email" autocapitalize="none" placeholder="Email" aria-label="Email"></div>
+  <div class="row" style="margin-top:8px"><input class="acP" type="password" autocomplete="${up?'new-password':'current-password'}" placeholder="Password (8 or more characters)" aria-label="Password"></div>
+  <button data-ac="go" style="width:100%;margin-top:10px">${up?'Create free account':'Sign in'}</button>${up?'':'<button class="g" data-ac="reset" style="width:100%;margin-top:8px">Forgot password?</button>'}${accMsgH()}`}
+function accInH(){
+  const s=acc.ses,pro=PRO_ON||acc.plan=='pro';
+  let h=`<h2 style="margin:0 0 4px">☁️ Your account</h2><div class="mu" style="word-break:break-all">${s.email}</div><div style="margin-top:6px"><span class="soon sm">${pro?'⭐ Pro':'Free plan'}</span></div><div class="mu acs" style="margin-top:8px">${acc.sync||'Signed in. Your career saves to the cloud automatically.'}</div>`;
+  if(acc.pend){const p=acc.pend;h+=`<div style="margin-top:10px;padding:10px;border-radius:12px;background:var(--bg)"><b>Two careers found</b><div class="mu">The cloud and this phone have different careers. Which one do you want to keep? The other one is replaced.</div>${accSumH(p.rs,'Cloud')}${accSumH(p.ls,'This phone')}<div class="row" style="margin-top:10px"><button data-ac="use-cloud">Use cloud</button><button class="g" data-ac="keep-local">Keep this phone</button></div></div>`}
+  h+=`<div class="row" style="margin-top:10px"><button class="g" data-ac="sync">Sync now</button><button class="g" data-ac="out">Sign out</button></div>${accMsgH()}`;
+  return h}
+function acctCardH(){
+  if(!accOn())return '';
+  if(acc.ses)return `<div class="card acct">${accInH()}</div>`;
+  return `<div class="card acct"><h2 style="margin:0 0 4px">☁️ Cloud save</h2><div class="mu">Optional. Create a free account to keep your career safe and play it on any phone.</div>${acc.open?accFormH():'<button data-ac="open" style="width:100%;margin-top:10px">Sign in or create account</button>'}</div>`}
+const accBH=bkRestoreH;bkRestoreH=function(){
+  if(!accOn())return accBH.apply(this,arguments);
+  const body=acc.ses?`<div class="mu acs" style="margin-top:8px">${acc.sync||'Signed in. Checking your cloud career…'}</div>${accMsgH()}`:accFormH();
+  return `<div class="card acct"><details${acc.open||acc.ses?' open':''}><summary style="cursor:pointer;color:var(--ac);font-weight:600" data-ac="peek">☁️ Have an account? Sign in to load your cloud career</summary>${body}</details></div>`+accBH.apply(this,arguments)};
+const accRP=renderProfile;renderProfile=function(){accRP.apply(this,arguments);try{const c=$('pf');if(accOn()&&c&&lbTab=='pf'&&c.firstElementChild&&!c.querySelector('.acct'))c.firstElementChild.insertAdjacentHTML('afterend',acctCardH())}catch(e){}};
+function accRender(){try{if(!$('pf').hidden)renderProfile()}catch(e){}try{if(!$('hm').hidden&&!G)renderHome()}catch(e){}}
+function accStat(){try{document.querySelectorAll('.acs').forEach(e=>e.textContent=acc.sync)}catch(e){}}
+function accMsg(box,t,err){acc.msg=t;acc.err=!!err;try{(box||document).querySelectorAll('.acmsg').forEach(e=>{e.textContent=t;e.style.color=err?'#c0392b':'';e.style.fontWeight=err?'600':''})}catch(e){}}
+function accBusy(b,on,t){if(!b)return;if(on){b.dataset.t=b.textContent;b.textContent=t||'Please wait…';b.disabled=true}else{if(b.dataset.t)b.textContent=b.dataset.t;b.disabled=false}}
+async function accGo(b,box){
+  const email=((box.querySelector('.acE')||{}).value||'').trim(),pw=(box.querySelector('.acP')||{}).value||'';
+  if(!/^\S+@\S+\.\S+$/.test(email))return accMsg(box,'Please enter a valid email address.',1);
+  if(pw.length<8)return accMsg(box,'Use a password with 8 or more characters.',1);
+  accBusy(b,1,acc.mode=='up'?'Creating account…':'Signing in…');accMsg(box,'');
+  try{
+    if(acc.mode=='up'){
+      const j=await sbReq('/auth/v1/signup?redirect_to='+encodeURIComponent(SB.site),{method:'POST',body:{email,password:pw,data:{name:(G&&G.manager)||email.split('@')[0]}}});
+      if(j&&j.access_token){accSet(j,'',email);acc.open=false;accMsg(box,'');accRender();accToast('Account created. You are signed in.');await accAfter();return}
+      accBusy(b,0);return accMsg(box,'Almost done. We sent a link to '+email+'. Tap it to confirm, then come back and sign in. Check your spam folder too.')}
+    const j=await sbReq('/auth/v1/token?grant_type=password',{method:'POST',body:{email,password:pw}});
+    accSet(j,'',email);acc.open=false;acc.sync='Signed in.';accRender();accToast('Signed in.');await accAfter()
+  }catch(e){accBusy(b,0);accMsg(box,e.message,1)}}
+async function accReset(b,box){
+  const email=((box.querySelector('.acE')||{}).value||'').trim();
+  if(!/^\S+@\S+\.\S+$/.test(email))return accMsg(box,'Type your email above, then tap Forgot password.',1);
+  accBusy(b,1,'Sending…');
+  try{await sbReq('/auth/v1/recover?redirect_to='+encodeURIComponent(SB.site),{method:'POST',body:{email}});accBusy(b,0);accMsg(box,'If that email has an account, a reset link is on its way. Check your spam folder too.')}
+  catch(e){accBusy(b,0);accMsg(box,e.message,1)}}
+async function accNewPw(b,box){
+  const pw=(box.querySelector('.acP')||{}).value||'';if(pw.length<8)return accMsg(box,'Use a password with 8 or more characters.',1);
+  accBusy(b,1,'Saving…');
+  try{await sbReq('/auth/v1/user',{method:'PUT',auth:1,body:{password:pw}});acc.rec=false;const m=document.getElementById('acm');if(m)m.remove();accToast('Password changed. You are signed in.');accRender();await accAfter()}
+  catch(e){accBusy(b,0);accMsg(box,e.message,1)}}
+async function accOut(){
+  try{if(acc.ses)await sbReq('/auth/v1/logout',{method:'POST',auth:1})}catch(e){}
+  const wasPro=PRO_ON;accClear();acc.sync='';acc.plan='';acc.open=false;lsSet(SBPL,null);
+  if(wasPro){G&&saveGame();location.reload();return}
+  accRender();accToast('Signed out. Your career stays on this phone.')}
+try{document.addEventListener('click',async e=>{
+  const b=e.target&&e.target.closest&&e.target.closest('[data-ac]');if(!b)return;
+  const a=b.dataset.ac,box=b.closest('.acct')||document;
+  if(a=='peek'){acc.open=true;return}
+  if(a=='open'){acc.open=true;accRender();return}
+  if(a=='mode-in'||a=='mode-up'){acc.mode=a=='mode-up'?'up':'in';acc.msg='';acc.err=false;const E=(box.querySelector('.acE')||{}).value,P=(box.querySelector('.acP')||{}).value;accRender();try{const n=document.querySelector('.acct .acE');if(n&&E)n.value=E;const q=document.querySelector('.acct .acP');if(q&&P)q.value=P}catch(x){}return}
+  if(a=='go'){accGo(b,box);return}
+  if(a=='reset'){accReset(b,box);return}
+  if(a=='msave'){accNewPw(b,box);return}
+  if(a=='mclose'){const m=document.getElementById('acm');if(m)m.remove();return}
+  if(a=='out'){accOut();return}
+  if(a=='sync'){accBusy(b,1,'Syncing…');await accPlan();if(acc.reload&&!acc.pend){acc.reload=false;try{sessionStorage.setItem('bn:rl',String(Date.now()))}catch(x){}G&&saveGame();location.reload();return}acc.reload=false;await accPull(true);accRender();return}
+  if(a=='use-cloud'&&acc.pend){accBusy(b,1,'Loading…');try{await accApply(acc.pend.r)}catch(x){accBusy(b,0);accMsg(box,x.message,1)}return}
+  if(a=='keep-local'&&acc.pend){accBusy(b,1,'Saving…');acc.pend=null;await accPush(true);accRender();return}
+})}catch(e){}
+// ---- on load: email links (confirm, reset), then check the plan and the cloud career
+async function accBoot(){
+  if(!accOn()||typeof location=='undefined')return;
+  const h=location.hash||'';
+  if(/access_token=|error_description=/.test(h)){
+    const p=new URLSearchParams(h.replace(/^#/,''));try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+    if(p.get('error_description')){accModal(`<h2 style="margin:0 0 6px">Link problem</h2><div class="mu">${accFriendly(p.get('error_description').replace(/\+/g,' '))}</div><button data-ac="mclose" style="width:100%;margin-top:12px">Close</button>`);return}
+    if(p.get('access_token')){
+      acc.ses={at:p.get('access_token'),rt:p.get('refresh_token')||'',exp:Date.now()+((+p.get('expires_in')||3600)*1000),uid:'',email:''};
+      try{const u=await sbReq('/auth/v1/user',{auth:1});acc.ses.uid=u.id;acc.ses.email=u.email;lsSet(SBK,JSON.stringify(acc.ses))}catch(e){accClear()}
+      if(acc.ses&&p.get('type')=='recovery'){acc.rec=true;accModal(`<h2 style="margin:0 0 6px">Choose a new password</h2><div class="mu">${acc.ses.email}</div><div class="row" style="margin-top:10px"><input class="acP" type="password" autocomplete="new-password" placeholder="New password (8 or more characters)" aria-label="New password"></div><button data-ac="msave" style="width:100%;margin-top:10px">Save password</button>${accMsgH()}`);return}
+      if(acc.ses)accToast('Email confirmed. You are signed in.')}}
+  if(acc.ses)await accAfter()}
+setTimeout(accBoot,250);
 
 let lgSel='cpl';
 const tni=id=>G.icl.teams.find(t=>t.id==id).name;
